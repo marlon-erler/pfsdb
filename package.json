@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/marlon-erler/rfsdb/issues"
   },
-  "homepage": "https://github.com/marlon-erler/rfsdb#readme"
+  "homepage": "https://github.com/marlon-erler/rfsdb#readme",
+  "dependencies": {
+    "@types/node": "^22.9.3"
+  }
 }
