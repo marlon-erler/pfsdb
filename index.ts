@@ -20,20 +20,25 @@ export class Database {
     async listFiles(directoryPath: string[]): Promise<string[]> {}
 }
 
-export class GenericTable<E extends GenericEntry> {
+export class GenericTable<T extends EntryFieldValues> {
     name: string;
     database: Database;
 
     constructor(name: string, database: Database) {}
 
-    async addField(fieldName: string): Promise<void> {}
+    private async addEntryToField(fieldName: string, fieldValue: string, entryId: string): Promise<void> {}
+    private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {}
+    private async updateFieldForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {}
 
-    async loadAll(): Promise<E> {}
-    async loadById(entryId: string): Promise<E> {}
-    async loadByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<E[]> {}
+    async loadAll(): Promise<T> {}
+    async loadById(entryId: string): Promise<T> {}
+    async loadByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<T[]> {}
 
-    async updateEntry(entryId: string, fieldValues: [string, string]): Promise<void> {}
     async removeEntry(): Promise<void> {}
+    async removeFieldValuesFromEntry(entryId: string, fieldName: string, fieldValuesToRemove: string[]): Promise<void> {}
+    async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {}
+    async addFieldValueToEntry(entryId: string, fieldName: string, fieldValuesToAdd: string[]): Promise<void> {}
+    async replaceFieldValuesForEntry(entryId: string, fieldName: string, newFieldValues: string[]): Promise<void> {}
 }
 
-export type GenericEntry = {[key: string]: string|string[]}
+export type EntryFieldValues = {[key: string]: string[]}
