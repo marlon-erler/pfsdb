@@ -20,7 +20,7 @@ export class Database {
     async listFiles(directoryPath: string[]): Promise<string[]> {}
 }
 
-export class GenericTable<T extends EntryFieldValues> {
+export class Table {
     name: string;
     database: Database;
 
@@ -30,9 +30,9 @@ export class GenericTable<T extends EntryFieldValues> {
     private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {}
     private async updateFieldForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {}
 
-    async loadAll(): Promise<T> {}
-    async loadById(entryId: string): Promise<T> {}
-    async loadByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<T[]> {}
+    async loadAll(): Promise<Entry[]> {}
+    async loadById(entryId: string): Promise<Entry> {}
+    async loadByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
 
     async removeEntry(): Promise<void> {}
     async removeFieldValuesFromEntry(entryId: string, fieldName: string, fieldValuesToRemove: string[]): Promise<void> {}
@@ -41,4 +41,11 @@ export class GenericTable<T extends EntryFieldValues> {
     async replaceFieldValuesForEntry(entryId: string, fieldName: string, newFieldValues: string[]): Promise<void> {}
 }
 
-export type EntryFieldValues = {[key: string]: string[]}
+export class Entry {
+    id: string;
+    table: Table;
+
+    constructor(table: Table) {}
+
+    async getFieldValues(fieldName: string): Promise<string[]> {}
+}
