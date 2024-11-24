@@ -56,6 +56,26 @@ export class Table {
 	this.database = database;
     }
 
+    get basePath(): string[] {
+	return [this.name];
+    }
+
+    private getFieldPath(fieldName: string): string[] {
+	return [...this.basePath, "fields", fieldName];
+    }
+    private getFieldValuePath(fieldName: string, fieldValue: string): string[] {
+	const fieldPath = this.getFieldPath(fieldName);
+	return [...fieldPath, fieldValue];
+    }
+
+    private getEntryPath(entryId: string): string[] {
+	return [...this.basePath, "entries", entryId];
+    }
+    private getEntryFieldPath(entryId: string, fieldName: string): string[] {
+	const entryPath = this.getEntryPath(entryId);
+	return [...entryPath, fieldName];
+    }
+
     private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {}
     private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {}
     private async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {}
