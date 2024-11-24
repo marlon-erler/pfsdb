@@ -4,19 +4,20 @@
   "description": "Relational File-System-Based Database",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+      "build": "esbuild index.ts --outfile=index.js",
+      "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/marlon-erler/rfsdb.git"
+      "type": "git",
+      "url": "git+https://github.com/marlon-erler/rfsdb.git"
   },
   "author": "marlon-erler",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/marlon-erler/rfsdb/issues"
+      "url": "https://github.com/marlon-erler/rfsdb/issues"
   },
   "homepage": "https://github.com/marlon-erler/rfsdb#readme",
   "dependencies": {
-    "@types/node": "^22.9.3"
+      "@types/node": "^22.9.3"
   }
 }
