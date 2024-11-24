@@ -67,6 +67,10 @@ export class Table {
 	const fieldPath = this.getFieldPath(fieldName);
 	return [...fieldPath, fieldValue];
     }
+    private getFieldValuePathForEntry(fieldName: string, fieldValue: string, entryId: string): string[] {
+	const fieldValuePath = this.getFieldValuePath(fieldName, fieldValue);
+	return [...fieldValuePath, entryId];
+    }
 
     private getEntryPath(entryId: string): string[] {
 	return [...this.basePath, "entries", entryId];
@@ -76,9 +80,18 @@ export class Table {
 	return [...entryPath, fieldName];
     }
 
-    private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {}
-    private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {}
-    private async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {}
+    private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {
+	const targetPath = this.getFieldValuePathForEntry(fieldName, fieldValue, entryId);
+	this.database.writeFileOrFail(targetPath, "");
+    }
+    private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {
+	const targetPath = this.getFieldValuePathForEntry(fieldName, fieldValue, entryId);
+	this.database.deleteFileOrFail(targetPath);
+    }
+    private async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {
+	this.removeEntryFromFieldValue(fieldName, oldFieldValue, entryId);
+	this.addEntryToFieldValue(fieldName, newFieldValue, entryId);
+    }
 
     async loadAllEntries(): Promise<Entry[]> {}
     async loadEntryById(entryId: string): Promise<Entry> {}
