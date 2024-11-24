@@ -51,7 +51,10 @@ export class Table {
     name: string;
     database: Database;
 
-    constructor(name: string, database: Database) {}
+    constructor(name: string, database: Database) {
+	this.name = name;
+	this.database = database;
+    }
 
     private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {}
     private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {}
