@@ -1,2 +1,2 @@
-# rfsdb
-Relational File-System-Based Database
+# pfsdb
+Plain File-System-Based Database
