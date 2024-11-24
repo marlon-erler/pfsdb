@@ -8,8 +8,7 @@ export class Util {
 export class Database {
     basePath: string;
 
-    constructor(basePath: string) {
-    }
+    constructor(basePath: string) {}
 
     private ensureDirectory(directoryPath: string[]): void {}
     private ensureBaseDirectory(): void {}
@@ -26,19 +25,18 @@ export class Table {
 
     constructor(name: string, database: Database) {}
 
-    private async addEntryToField(fieldName: string, fieldValue: string, entryId: string): Promise<void> {}
+    private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {}
     private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {}
-    private async updateFieldForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {}
+    private async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {}
 
-    async loadAll(): Promise<Entry[]> {}
-    async loadById(entryId: string): Promise<Entry> {}
-    async loadByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
+    async loadAllEntries(): Promise<Entry[]> {}
+    async loadEntryById(entryId: string): Promise<Entry> {}
+    async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
 
     async removeEntry(): Promise<void> {}
-    async removeFieldValuesFromEntry(entryId: string, fieldName: string, fieldValuesToRemove: string[]): Promise<void> {}
     async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {}
-    async addFieldValueToEntry(entryId: string, fieldName: string, fieldValuesToAdd: string[]): Promise<void> {}
-    async replaceFieldValuesForEntry(entryId: string, fieldName: string, newFieldValues: string[]): Promise<void> {}
+    async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {}
+    async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {}
 }
 
 export class Entry {
