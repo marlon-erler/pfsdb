@@ -27,10 +27,24 @@ export class Database {
 	this.createDirectoryOrFail(directoryPath);
     }
 
-    async writeFileOrFail(filePath: string[], content: string): Promise<void> {}
-    async readFileOrFail(filePath: string[]): Promise<string> {}
-    async deleteFileOrFail(filePath: string[]): Promise<void> {}
-    async listFilesOrFail(directoryPath: string[]): Promise<string[]> {}
+    async writeFileOrFail(filePath: string[], content: string): Promise<void> {
+	this.createDirectoryForFileOrFail(filePath);
+	
+	const joinedPath = this.joinPath(filePath);
+	await Fs.writeFile(joinedPath, content);
+    }
+    async readFileOrFail(filePath: string[]): Promise<string> {
+	const joinedPath = this.joinPath(filePath);
+	return await Fs.readFile(joinedPath, { encoding: "utf8" });
+    }
+    async deleteFileOrFail(filePath: string[]): Promise<void> {
+	const joinedPath = this.joinPath(filePath);
+	await Fs.rm(joinedPath);
+    }
+    async listFilesOrFail(directoryPath: string[]): Promise<string[]> {
+	const joinedPath = this.joinPath(directoryPath);
+	return await Fs.readdir(joinedPath);
+    }
 }
 
 export class Table {
