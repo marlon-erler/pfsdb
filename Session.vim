@@ -186,8 +186,9 @@ set ruler
 set runtimepath=~/.vim,~/.vim/plugged/coc.nvim,~/.vim/plugged/emmet-vim,~/.vim/plugged/nerdtree,~/.vim/plugged/typescript-vim,~/.vim/plugged/vim-jsx-typescript,~/.vim/plugged/minimap.vim,/var/lib/vim/addons,/etc/vim,/usr/share/vim/vimfiles,/usr/share/vim/vim90,/usr/share/vim/vimfiles/after,/etc/vim/after,/var/lib/vim/addons/after,~/.vim/plugged/vim-jsx-typescript/after,~/.vim/after
 set shiftwidth=4
 set smarttab
-set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
+set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc,.snap
 set updatetime=500
+set window=55
 let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -201,7 +202,9 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +0 index.ts
+badd +1 index.ts
+badd +13 package.json
+badd +36 index.js
 argglobal
 %argdel
 $argadd index.ts
@@ -222,12 +225,12 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 31 + 119) / 238)
-exe 'vert 2resize ' . ((&columns * 206 + 119) / 238)
+exe 'vert 1resize ' . ((&columns * 31 + 135) / 271)
+exe 'vert 2resize ' . ((&columns * 239 + 135) / 271)
 argglobal
 enew
-file NERD_tree_tab_1
-balt index.ts
+file NERD_tree_tab_3
+balt package.json
 let s:cpo_save=&cpo
 set cpo&vim
 nnoremap <buffer> <silent> <NL> :call nerdtree#ui_glue#invokeKeyMap("<C-j>")
@@ -407,6 +410,7 @@ setlocal nowrap
 setlocal wrapmargin=0
 wincmd w
 argglobal
+balt index.js
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -540,16 +544,16 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 3 - ((2 * winheight(0) + 33) / 67)
+let s:l = 1 - ((0 * winheight(0) + 27) / 54)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 3
+keepjumps 1
 normal! 0
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 31 + 119) / 238)
-exe 'vert 2resize ' . ((&columns * 206 + 119) / 238)
+exe 'vert 1resize ' . ((&columns * 31 + 135) / 271)
+exe 'vert 2resize ' . ((&columns * 239 + 135) / 271)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf

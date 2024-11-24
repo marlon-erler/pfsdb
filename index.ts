@@ -13,10 +13,10 @@ export class Database {
     private ensureDirectory(directoryPath: string[]): void {}
     private ensureBaseDirectory(): void {}
 
-    async writeFile(filePath: string[], content: string): Promise<void> {}
-    async readFile(filePath: string[]): Promise<string> {}
-    async deleteFile(filePath: string[]): Promise<void> {}
-    async listFiles(directoryPath: string[]): Promise<string[]> {}
+    async writeFileOrFail(filePath: string[], content: string): Promise<void> {}
+    async readFileOrFail(filePath: string[]): Promise<string> {}
+    async deleteFileOrFail(filePath: string[]): Promise<void> {}
+    async listFilesOrFail(directoryPath: string[]): Promise<string[]> {}
 }
 
 export class Table {
