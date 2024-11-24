@@ -104,7 +104,9 @@ export class Table {
 	const entryIds = await this.database.listFilesOrFail(this.entryContainerPath);
 	return entryIds.map(id => new Entry(id, this));
     }
-    async loadEntryById(entryId: string): Promise<Entry> {}
+    async loadEntryById(entryId: string): Promise<Entry> {
+	return new Entry(entryId, this);
+    }
     async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
 
     async removeEntry(): Promise<void> {}
