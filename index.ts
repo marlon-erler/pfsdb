@@ -122,5 +122,9 @@ export class Entry {
 	this.table = table;
     }
 
+    get path(): string[] {
+	return this.table.getEntryPath(this.id);
+    }
+
     async getFieldValues(fieldName: string): Promise<string[]> {}
 }
