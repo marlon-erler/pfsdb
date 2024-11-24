@@ -101,8 +101,8 @@ export class Table {
     }
 
     async loadAllEntries(): Promise<Entry[]> {
-	const entryIds = this.database.listFilesOrFail(this.getEntryContainerPath());
-	///////
+	const entryIds = await this.database.listFilesOrFail(this.entryContainerPath);
+	return entryIds.map(id => new Entry(id, this));
     }
     async loadEntryById(entryId: string): Promise<Entry> {}
     async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
