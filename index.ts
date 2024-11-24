@@ -12,8 +12,20 @@ export class Database {
 	this.basePath = basePath;
     }
 
-    private ensureDirectory(directoryPath: string[]): void {}
-    private ensureBaseDirectory(): void {}
+    private joinPath(path: string[]): string {
+	return Path.join(this.basePath, ...path);
+    }
+    private async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
+	const joinedPath = this.joinPath(directoryPath);
+	await Fs.mkdir(joinedPath, { recursive: true });
+    }
+    private async createBaseDirectoryOrFail(): Promise<void> {
+	await this.createDirectoryOrFail([]);
+    }
+    private async createDirectoryForFileOrFail(filePath: string[]): Promise<void> {
+	const directoryPath = Util.getDirectoryPath(filePath);
+	this.createDirectoryOrFail(directoryPath);
+    }
 
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {}
     async readFileOrFail(filePath: string[]): Promise<string> {}
