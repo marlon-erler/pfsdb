@@ -1,7 +1,7 @@
 {
-  "name": "rfsdb",
+  "name": "pfsdb",
   "version": "1.0.0-beta1",
-  "description": "Relational File-System-Based Database",
+  "description": "Plain File-System-Based Database",
   "main": "index.js",
   "scripts": {
       "build": "esbuild index.ts --outfile=index.js",
