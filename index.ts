@@ -107,7 +107,15 @@ export class Table {
     async loadEntryById(entryId: string): Promise<Entry> {
 	return new Entry(entryId, this);
     }
-    async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
+    async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {
+	const allMatchingEntryIds = [] as string[];
+	for (const possibleValue of possibleFieldValues) {
+	    const valuePath = this.getFieldValuePath(fieldName, possibleValue);
+	    const matchingEntryIds = await this.database.listFilesOrFail(valuePath);
+	    allMatchingEntryIds.push(...matchingEntryIds);
+	}
+	return allMatchingEntryIds.map(id => new Entry(id, this));
+    }
 
     async removeEntry(): Promise<void> {}
     async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {}
