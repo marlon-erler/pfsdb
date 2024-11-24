@@ -72,8 +72,11 @@ export class Table {
 	return [...fieldValuePath, entryId];
     }
 
+    private getEntryContainerPath(): string[] {
+	return [...this.basePath, "entries"];
+    }
     private getEntryPath(entryId: string): string[] {
-	return [...this.basePath, "entries", entryId];
+	return [...this.getEntryContainerPath(), entryId];
     }
     private getEntryFieldPath(entryId: string, fieldName: string): string[] {
 	const entryPath = this.getEntryPath(entryId);
@@ -93,7 +96,10 @@ export class Table {
 	this.addEntryToFieldValue(fieldName, newFieldValue, entryId);
     }
 
-    async loadAllEntries(): Promise<Entry[]> {}
+    async loadAllEntries(): Promise<Entry[]> {
+	const entryIds = this.database.listFilesOrFail(this.getEntryContainerPath());
+	///////
+    }
     async loadEntryById(entryId: string): Promise<Entry> {}
     async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {}
 
