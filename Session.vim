@@ -193,7 +193,7 @@ let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-
 let v:this_session=expand("<sfile>:p")
 silent only
 silent tabonly
-cd ~/Documents/Code/Projects/rfsdb
+cd ~/Documents/Code/Other/pfsdb
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
@@ -229,8 +229,8 @@ exe 'vert 1resize ' . ((&columns * 31 + 135) / 271)
 exe 'vert 2resize ' . ((&columns * 239 + 135) / 271)
 argglobal
 enew
-file NERD_tree_tab_3
-balt package.json
+file NERD_tree_tab_2
+balt index.ts
 let s:cpo_save=&cpo
 set cpo&vim
 nnoremap <buffer> <silent> <NL> :call nerdtree#ui_glue#invokeKeyMap("<C-j>")
@@ -544,7 +544,7 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 27) / 54)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -568,6 +568,7 @@ if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
+nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

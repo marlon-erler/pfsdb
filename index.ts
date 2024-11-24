@@ -8,7 +8,9 @@ export class Util {
 export class Database {
     basePath: string;
 
-    constructor(basePath: string) {}
+    constructor(basePath: string) {
+	this.basePath = basePath;
+    }
 
     private ensureDirectory(directoryPath: string[]): void {}
     private ensureBaseDirectory(): void {}
