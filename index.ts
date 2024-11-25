@@ -117,7 +117,19 @@ export class Table {
 	return allMatchingEntryIds.map(id => new Entry(id, this));
     }
 
-    async removeEntry(): Promise<void> {}
+    async removeEntry(entry: Entry): Promise<void> {
+	// delete from fields
+	const fields = await entry.getFields();
+	for (const fieldName of fields) {
+	    const fieldValues = await entry.getFieldValues(fieldName);
+	    for (const fieldValue of fieldValues) {
+		this.removeEntryFromFieldValue(fieldName, fieldValue, entry.id);
+	    }
+	}
+
+	// delete entry
+	this.database.deleteFileOrFail(entry.path);
+    }
     async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {}
     async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {}
     async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {}
