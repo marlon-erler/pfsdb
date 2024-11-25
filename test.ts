@@ -45,10 +45,6 @@ function assertArrays(a: any[], b: any[]) {
 console.log("setting variables...");
 const TEST_DIR = "test";
 const DB_BASE = Path.join(TEST_DIR, "base");
-const TABLE_NAME = "table";
-const FIELD_NAME = "field";
-const VALUE_NAME = "value";
-const ENTRY_ID = "entry-id";
 
 console.log("preparing...");
 if (Fs.existsSync(TEST_DIR))
@@ -120,6 +116,13 @@ logStep("file system operations");
 /////
 logStep("table basic");
 {
+    // setup
+    const TABLE_NAME = "table";
+    const FIELD_NAME = "field";
+    const VALUE_NAME = "value";
+    const ENTRY_ID = "entry-id";
+
+    // test
     const database = new Database(DB_BASE);
     const table = new Table(TABLE_NAME, database);
 
