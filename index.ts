@@ -135,6 +135,15 @@ export class Entry {
     get path(): string[] {
 	return this.table.getEntryPath(this.id);
     }
+    get database(): Database {
+	return this.table.database;
+    }
 
-    async getFieldValues(fieldName: string): Promise<string[]> {}
+    async getFields(): Promise<string[]> {
+	return await this.database.listFilesOrFail(this.path);
+    }
+    async getFieldValues(fieldName: string): Promise<string[]> {
+	const directoryPath = this.table.getEntryFieldPath(this.id, fieldName);
+	return await this.database.listFilesOrFail(directoryPath);
+    }
 }
