@@ -184,10 +184,11 @@ logStep("core");
 	    await table.addFieldValuesToEntry(entryId, "a", ["a", "b", "c"]);
 	    await table.addFieldValuesToEntry(entryId, "a", ["c", "d"]);
 	    await table.addFieldValuesToEntry(entryId, "b", ["1", "2"]);
+	    await table.addFieldValuesToEntry(entryId, "id", [suffix]);
 
 	    log("getting fields...");
 	    const fields = await table.getFieldsOfEntry(entryId);
-	    assertArrays(fields, ["a", "b"]);
+	    assertArrays(fields, ["a", "b", "id"]);
 
 	    log("getting values...");
 	    const aValues = await table.getValuesForField(entryId, "a");
