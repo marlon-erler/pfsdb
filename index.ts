@@ -125,10 +125,7 @@ export class Table {
 	// delete from fields
 	const fields = await entry.getFields();
 	for (const fieldName of fields) {
-	    const fieldValues = await entry.getFieldValues(fieldName);
-	    for (const fieldValue of fieldValues) {
-		this.removeEntryFromFieldValue(fieldName, fieldValue, entry.id);
-	    }
+	    this.clearFieldValuesForEntry(entry, fieldName);
 	}
 
 	// delete entry
