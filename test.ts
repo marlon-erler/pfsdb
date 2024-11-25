@@ -8,7 +8,7 @@ function log(message: string, ...parts: any[]) {
     logColored("gray", message, ...parts);
 }
 function logColored(color: string, message: string, ...parts: any[]) {
-    console.log(Colors[color](message), ...parts);
+    console.log(Colors[color](`TEST: ${message}`), ...parts);
 }
 
 function logStep(stepName: string) {
