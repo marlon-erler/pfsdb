@@ -10,6 +10,9 @@ export class Util {
     static logActivity(message: string, detail: string): void {
 	console.log(Colors.magenta(message), Colors.bold(detail));
     }
+    static logSuccess(message: string, detail: string): void {
+	console.log(Colors.green(message), Colors.bold(detail));
+    }
 }
 
 export class Database {
@@ -29,10 +32,11 @@ export class Database {
 	const joinedPath = this.getFileSystemPath(directoryPath);
 	Util.logActivity("creating directory at", joinedPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
+	Util.logSuccess("created directory at", joinedPath);
     }
     private async createParentDirectoryForFileOrFail(filePath: string[]): Promise<void> {
 	const directoryPath = Util.getDirectoryPath(filePath);
-	this.createDirectoryOrFail(directoryPath);
+	await this.createDirectoryOrFail(directoryPath);
     }
     async createBaseDirectoryOrFail(): Promise<void> {
 	await this.createDirectoryOrFail([]);
@@ -47,11 +51,12 @@ export class Database {
 
     // Files
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {
-	this.createParentDirectoryForFileOrFail(filePath);
+	await this.createParentDirectoryForFileOrFail(filePath);
 
 	const joinedPath = this.getFileSystemPath(filePath);
 	Util.logActivity("writing file at", joinedPath);
 	await Fs.writeFile(joinedPath, content);
+	Util.logSuccess("wrote file at", joinedPath);
     }
     async readFileOrFail(filePath: string[]): Promise<string> {
 	const joinedPath = this.getFileSystemPath(filePath);
@@ -62,6 +67,7 @@ export class Database {
 	const joinedPath = this.getFileSystemPath(filePath);
 	Util.logActivity("deleting object at", joinedPath);
 	await Fs.rm(joinedPath, { recursive: true });
+	Util.logSuccess("deleted object at", joinedPath);
     }
 }
 
