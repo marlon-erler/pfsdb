@@ -4,20 +4,21 @@
   "description": "Plain File-System-Based Database",
   "main": "index.js",
   "scripts": {
-      "build": "esbuild index.ts --outfile=index.js",
-      "test": "bun test.ts"
+    "build": "esbuild index.ts --outfile=index.js",
+    "test": "bun test.ts"
   },
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/marlon-erler/rfsdb.git"
+    "type": "git",
+    "url": "git+https://github.com/marlon-erler/rfsdb.git"
   },
   "author": "marlon-erler",
   "license": "MIT",
   "bugs": {
-      "url": "https://github.com/marlon-erler/rfsdb/issues"
+    "url": "https://github.com/marlon-erler/rfsdb/issues"
   },
   "homepage": "https://github.com/marlon-erler/rfsdb#readme",
   "dependencies": {
-      "@types/node": "^22.9.3"
+    "@types/node": "^22.9.3",
+    "colors": "^1.4.0"
   }
 }

@@ -1,9 +1,18 @@
 import Path from "path";
 import Fs from "fs";
+import Colors from "colors/safe";
+
 import { Util, Database, Table } from "./index";
 
+function log(message: string, ...parts: any[]) {
+    logColored("gray", message, ...parts);
+}
+function logColored(color: string, message: string, ...parts: any[]) {
+    console.log(Colors[color](message), ...parts);
+}
+
 function logStep(stepName: string) {
-    console.log(`
+    log(`
 ###
 # Current step: ${stepName}
 ###`
@@ -11,11 +20,11 @@ function logStep(stepName: string) {
 }
 
 function ok() {
-    console.log("passed");
+    logColored("green", "passed");
 }
 
 function assert(a: any, b: any) {
-    console.log("comparing plain values:", a, b);
+    log("comparing plain values:", a, b);
 
     if (a != b)
 	throw `${a} does not match ${b}`;
@@ -24,7 +33,7 @@ function assert(a: any, b: any) {
 }
 
 function assertArrays(a: any[], b: any[]) {
-    console.log("comparing arrays:", a, b);
+    log("comparing arrays:", a, b);
 
     if (a.length != b.length) 
 	throw "array sizes do not mach"
@@ -42,16 +51,16 @@ function assertArrays(a: any[], b: any[]) {
     ok();
 }
 
-console.log("setting variables...");
+log("setting variables...");
 const TEST_DIR = "test";
 const DB_BASE = Path.join(TEST_DIR, "base");
 
-console.log("preparing...");
+log("preparing...");
 if (Fs.existsSync(TEST_DIR))
     Fs.rmSync(TEST_DIR, { recursive: true });
 Fs.mkdirSync(TEST_DIR, { recursive: true })
 
-console.log("starting test...");
+log("starting test...");
 
 /////
 logStep("generate directory path");
@@ -67,10 +76,10 @@ logStep("database basic");
 {
     const database = new Database(DB_BASE);
 
-    console.log("checking base path...");
+    log("checking base path...");
     assert(DB_BASE, database.basePath);
 
-    console.log("checking getFileSystemPath...");
+    log("checking getFileSystemPath...");
     const inputPath = ["a", "b", "c"];
     const control = Path.join(DB_BASE, ...inputPath);
     const result = database.getFileSystemPath(inputPath);
@@ -92,23 +101,23 @@ logStep("file system operations");
     const fileContent = "hello, world!";
 
     // test
-    console.log("creating directory...");
+    log("creating directory...");
     await database.createDirectoryOrFail(directoryPath);
 
-    console.log("writing files...");
+    log("writing files...");
     await database.writeFileOrFail(filePath, fileContent);
     await database.writeFileOrFail(filePathB, fileContent);
 
-    console.log("reading directory...");
+    log("reading directory...");
     const readDirControl = Fs.readdirSync(realDirectoryPath);
     const readDirResult = await database.readDirectoryOrFail(directoryPath);
     assertArrays(readDirControl, readDirResult);
 
-    console.log("reading file...");
+    log("reading file...");
     const readFileResult = await database.readFileOrFail(filePath);
     assert(fileContent, readFileResult);
 
-    console.log("deleting file...");
+    log("deleting file...");
     await database.deleteObjectOrFail(filePath);
     assertArrays(["file2"], await database.readDirectoryOrFail(directoryPath));
 }
@@ -126,36 +135,36 @@ logStep("table basic");
     const database = new Database(DB_BASE);
     const table = new Table(TABLE_NAME, database);
 
-    console.log("checking base path...");
+    log("checking base path...");
     assertArrays([TABLE_NAME], table.basePath);
 
-    console.log("checking field container path...");
+    log("checking field container path...");
     assertArrays(table.fieldContainerPath, [TABLE_NAME, "fields"]);
 
-    console.log("checking entry container path...");
+    log("checking entry container path...");
     assertArrays(table.entryContainerPath, [TABLE_NAME, "entries"]);
 
-    console.log("checking specific field path...");
+    log("checking specific field path...");
     // @ts-expect-error 
     assertArrays(table.getPathForField(FIELD_NAME), [TABLE_NAME, "fields", FIELD_NAME]);
 
-    console.log("checking specific field value path...");
+    log("checking specific field value path...");
     // @ts-expect-error 
     assertArrays(table.getValuePathForField(FIELD_NAME, VALUE_NAME), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME]);
 
-    console.log("checking specific entry path in field...");
+    log("checking specific entry path in field...");
     // @ts-expect-error 
     assertArrays(table.getEntryPathForFieldValue(FIELD_NAME, VALUE_NAME, ENTRY_ID), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME, ENTRY_ID]);
 
-    console.log("checking specific entry path...");
+    log("checking specific entry path...");
     // @ts-expect-error 
     assertArrays(table.getPathForEntry(ENTRY_ID), [TABLE_NAME, "entries", ENTRY_ID]);
 
-    console.log("checking specific field path in entry...");
+    log("checking specific field path in entry...");
     // @ts-expect-error 
     assertArrays(table.getFieldPathForEntry(ENTRY_ID, FIELD_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME]);
 
-    console.log("checking specific field value path in entry...");
+    log("checking specific field value path in entry...");
     // @ts-expect-error 
     assertArrays(table.getFieldValuePathForEntry(ENTRY_ID, FIELD_NAME, VALUE_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME, VALUE_NAME]);
 }
@@ -171,27 +180,27 @@ logStep("core");
 	async function testEntry(suffix: string) {
 	    const entryId = `entry-${suffix}`;
 
-	    console.log("adding values to fields...");
+	    log("adding values to fields...");
 	    await table.addFieldValuesToEntry(entryId, "a", ["a", "b", "c"]);
 	    await table.addFieldValuesToEntry(entryId, "a", ["c", "d"]);
 	    await table.addFieldValuesToEntry(entryId, "b", ["1", "2"]);
 
-	    console.log("getting fields...");
+	    log("getting fields...");
 	    const fields = await table.getFieldsOfEntry(entryId);
 	    assertArrays(fields, ["a", "b"]);
 
-	    console.log("getting values...");
+	    log("getting values...");
 	    const aValues = await table.getValuesForField(entryId, "a");
 	    const bValues = await table.getValuesForField(entryId, "b");
 	    assertArrays(aValues, ["a", "b", "c", "d"]);
 	    assertArrays(bValues, ["1", "2"]);
 
-	    console.log("deleting values...");
+	    log("deleting values...");
 	    await table.removeFieldValuesFromEntry(entryId, "a", ["a", "b"]);
 	    const removeControl = await table.getValuesForField(entryId, "a");
 	    assertArrays(removeControl, ["c"]);
 
-	    console.log("clearing values...");
+	    log("clearing values...");
 	    await table.clearFieldValuesForEntry(entryId, "b");
 	    const clearControl = await table.getValuesForField(entryId, "b");
 	    assertArrays(clearControl, []);
@@ -200,7 +209,7 @@ logStep("core");
 	await testEntry("1");
 	await testEntry("2");
 
-	console.log("getting entries...");
+	log("getting entries...");
 	const entries = await table.getAllEntries();
 	assertArrays(entries, ["entry-1", "entry-2"]);
     }
