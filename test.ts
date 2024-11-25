@@ -113,7 +113,7 @@ logStep("file system operations");
     assert(fileContent, readFileResult);
 
     console.log("deleting file...");
-    await database.deleteFileOrFail(filePath);
+    await database.deleteObjectOrFail(filePath);
     assertArrays(["file2"], await database.readDirectoryOrFail(directoryPath));
 }
 
@@ -133,21 +133,27 @@ logStep("table basic");
     assertArrays(table.entryContainerPath, [TABLE_NAME, "entries"]);
 
     console.log("checking specific field path...");
-    assertArrays(table.getFieldPath(FIELD_NAME), [TABLE_NAME, "fields", FIELD_NAME]);
+    // @ts-expect-error 
+    assertArrays(table.getPathForField(FIELD_NAME), [TABLE_NAME, "fields", FIELD_NAME]);
 
     console.log("checking specific field value path...");
+    // @ts-expect-error 
     assertArrays(table.getValuePathForField(FIELD_NAME, VALUE_NAME), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME]);
 
     console.log("checking specific entry path in field...");
+    // @ts-expect-error 
     assertArrays(table.getEntryPathForFieldValue(FIELD_NAME, VALUE_NAME, ENTRY_ID), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME, ENTRY_ID]);
 
     console.log("checking specific entry path...");
-    assertArrays(table.getEntryPath(ENTRY_ID), [TABLE_NAME, "entries", ENTRY_ID]);
+    // @ts-expect-error 
+    assertArrays(table.getPathForEntry(ENTRY_ID), [TABLE_NAME, "entries", ENTRY_ID]);
 
     console.log("checking specific field path in entry...");
+    // @ts-expect-error 
     assertArrays(table.getFieldPathForEntry(ENTRY_ID, FIELD_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME]);
 
     console.log("checking specific field value path in entry...");
+    // @ts-expect-error 
     assertArrays(table.getFieldValuePathForEntry(ENTRY_ID, FIELD_NAME, VALUE_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME, VALUE_NAME]);
 }
 
