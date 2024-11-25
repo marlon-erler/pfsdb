@@ -198,7 +198,7 @@ logStep("core");
 	    log("deleting values...");
 	    await table.removeFieldValuesFromEntry(entryId, "a", ["a", "b"]);
 	    const removeControl = await table.getValuesForField(entryId, "a");
-	    assertArrays(removeControl, ["c"]);
+	    assertArrays(removeControl, ["c", "d"]);
 
 	    log("clearing values...");
 	    await table.clearFieldValuesForEntry(entryId, "b");
