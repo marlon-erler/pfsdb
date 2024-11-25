@@ -2,7 +2,9 @@ import Fs from "fs/promises";
 import Path from "path";
 
 export class Util {
-    static getDirectoryPath(filePath: string[]): string[] {}
+    static getDirectoryPath(filePath: string[]): string[] {
+	return [...filePath].splice(0, filePath.length - 2);
+    }
 }
 
 export class Database {
@@ -12,12 +14,12 @@ export class Database {
 	this.basePath = basePath;
     }
 
-    joinPath(path: string[]): string {
+    getFileSystemPath(path: string[]): string {
 	return Path.join(this.basePath, ...path);
     }
 
     async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
-	const joinedPath = this.joinPath(directoryPath);
+	const joinedPath = this.getFileSystemPath(directoryPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
     }
     async createBaseDirectoryOrFail(): Promise<void> {
@@ -31,19 +33,19 @@ export class Database {
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {
 	this.createDirectoryForFileOrFail(filePath);
 	
-	const joinedPath = this.joinPath(filePath);
+	const joinedPath = this.getFileSystemPath(filePath);
 	await Fs.writeFile(joinedPath, content);
     }
     async readFileOrFail(filePath: string[]): Promise<string> {
-	const joinedPath = this.joinPath(filePath);
+	const joinedPath = this.getFileSystemPath(filePath);
 	return await Fs.readFile(joinedPath, { encoding: "utf8" });
     }
     async deleteFileOrFail(filePath: string[]): Promise<void> {
-	const joinedPath = this.joinPath(filePath);
+	const joinedPath = this.getFileSystemPath(filePath);
 	await Fs.rm(joinedPath);
     }
     async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
-	const joinedPath = this.joinPath(directoryPath);
+	const joinedPath = this.getFileSystemPath(directoryPath);
 	return await Fs.readdir(joinedPath);
     }
 }
