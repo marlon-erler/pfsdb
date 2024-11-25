@@ -141,7 +141,8 @@ export class Table {
     async getFieldsOfEntry(entryId: string): Promise<string[]> {
 	try {
 	    const entryPath = this.getPathForEntry(entryId);
-	    return await this.database.readDirectoryOrFail(entryPath);
+	    const unsortedFields = await this.database.readDirectoryOrFail(entryPath);
+	    return unsortedFields.sort();
 	} catch {
 	    return [];
 	}
@@ -149,7 +150,8 @@ export class Table {
     async getValuesForField(entryId: string, fieldName: string): Promise<string[]> {
 	try {
 	    const directoryPath = this.getFieldPathForEntry(entryId, fieldName);
-	    return await this.database.readDirectoryOrFail(directoryPath);
+	    const unsortedValues = await this.database.readDirectoryOrFail(directoryPath);
+	    return unsortedValues.sort();
 	} catch {
 	    return [];
 	}
