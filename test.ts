@@ -42,6 +42,7 @@ function assertArrays(a: any[], b: any[]) {
 }
 
 console.log("starting test...");
+const DB_BASE = "test";
 
 /////
 logStep("generate directory path");
@@ -55,13 +56,18 @@ logStep("generate directory path");
 /////
 logStep("database paths");
 {
-    const basePath = ".";
-    const database = new Database(basePath);
+    const database = new Database(DB_BASE);
 
-    assert(basePath, database.basePath);
+    assert(DB_BASE, database.basePath);
     
     const inputPath = ["a", "b", "c"];
-    const control = Path.join(basePath, ...inputPath);
+    const control = Path.join(DB_BASE, ...inputPath);
     const result = database.getFileSystemPath(inputPath);
     assert(control, result);
+}
+
+/////
+logStep("file system operations");
+{
+    const database = new Database(DB_BASE);
 }
