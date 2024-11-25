@@ -8,6 +8,10 @@ function logStep(stepName: string) {
     )
 }
 
+function ok() {
+    console.log("passed");
+}
+
 function assertArrays(a: any[], b: any[]) {
     console.log("comparing arrays", a, b);
 
@@ -23,15 +27,19 @@ function assertArrays(a: any[], b: any[]) {
 
 	throw `${aItem} does not match ${bItem} (index ${i}`;
     }
+
+    ok();
 }
 
 console.log("starting test...");
 
+/////
+logStep("generate directory path");
 {
-    logStep("generate directory path");
-
     const filePath = ["a", "b", "c"];
     const control = ["a", "b"];
     const result = Util.getDirectoryPath(filePath);
     assertArrays(control, result);
 }
+
+
