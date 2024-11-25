@@ -20,7 +20,7 @@ export class Database {
     }
 
     // Directories
-    private async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
+    async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(directoryPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
     }
