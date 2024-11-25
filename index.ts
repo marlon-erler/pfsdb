@@ -45,6 +45,8 @@ export class Database {
 	await Fs.rm(joinedPath);
     }
     async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
+	await this.createDirectoryOrFail(directoryPath);
+
 	const joinedPath = this.getFileSystemPath(directoryPath);
 	return await Fs.readdir(joinedPath);
     }
