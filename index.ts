@@ -18,16 +18,16 @@ export class Database {
 	return Path.join(this.basePath, ...path);
     }
 
-    async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
+    private async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(directoryPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
     }
-    async createBaseDirectoryOrFail(): Promise<void> {
-	await this.createDirectoryOrFail([]);
-    }
-    async createDirectoryForFileOrFail(filePath: string[]): Promise<void> {
+    private async createDirectoryForFileOrFail(filePath: string[]): Promise<void> {
 	const directoryPath = Util.getDirectoryPath(filePath);
 	this.createDirectoryOrFail(directoryPath);
+    }
+    async createBaseDirectoryOrFail(): Promise<void> {
+	await this.createDirectoryOrFail([]);
     }
 
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {
@@ -71,14 +71,14 @@ export class Table {
 	return [...this.basePath, "entries"];
     }
 
-    getFieldPath(fieldName: string): string[] {
+    private getFieldPath(fieldName: string): string[] {
 	return [...this.fieldContainerPath, fieldName];
     }
-    getValuePathForField(fieldName: string, fieldValue: string): string[] {
+    private getValuePathForField(fieldName: string, fieldValue: string): string[] {
 	const fieldPath = this.getFieldPath(fieldName);
 	return [...fieldPath, fieldValue];
     }
-    getEntryPathForFieldValue(fieldName: string, fieldValue: string, entryId: string): string[] {
+    private getEntryPathForFieldValue(fieldName: string, fieldValue: string, entryId: string): string[] {
 	const fieldValuePath = this.getValuePathForField(fieldName, fieldValue);
 	return [...fieldValuePath, entryId];
     }
@@ -95,15 +95,15 @@ export class Table {
 	return [...fieldPath, fieldValue];
     }
 
-    async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {
+    private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {
 	const targetPath = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
 	this.database.writeFileOrFail(targetPath, "");
     }
-    async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {
+    private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {
 	const targetPath = this.getEntryPathForFieldValue(fieldName, oldFieldValue, entryId);
 	this.database.deleteFileOrFail(targetPath);
     }
-    async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {
+    private async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {
 	this.removeEntryFromFieldValue(fieldName, oldFieldValue, entryId);
 	this.addEntryToFieldValue(fieldName, newFieldValue, entryId);
     }
