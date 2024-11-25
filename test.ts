@@ -1,3 +1,4 @@
+import Path from "path";
 import { Util, Database, Table, Entry } from "./index";
 
 function logStep(stepName: string) {
@@ -12,8 +13,17 @@ function ok() {
     console.log("passed");
 }
 
+function assert(a: any, b: any) {
+    console.log("comparing plain values:", a, b);
+    
+    if (a != b)
+	throw `${a} does not match ${b}`;
+
+    ok();
+}
+
 function assertArrays(a: any[], b: any[]) {
-    console.log("comparing arrays", a, b);
+    console.log("comparing arrays:", a, b);
 
     if (a.length != b.length) 
 	throw "array sizes do not mach"
@@ -42,4 +52,16 @@ logStep("generate directory path");
     assertArrays(control, result);
 }
 
+/////
+logStep("database paths");
+{
+    const basePath = ".";
+    const database = new Database(basePath);
 
+    assert(basePath, database.basePath);
+    
+    const inputPath = ["a", "b", "c"];
+    const control = Path.join(basePath, ...inputPath);
+    const result = database.getFileSystemPath(inputPath);
+    assert(control, result);
+}
