@@ -113,75 +113,65 @@ export class Table {
 
     // Entries
     // load
-    async loadAllEntries(): Promise<Entry[]> {
-	const entryIds = await this.database.readDirectoryOrFail(this.entryContainerPath);
-	return entryIds.map(id => new Entry(id, this));
+    async getAllEntries(): Promise<string[]> {
+	return await this.database.readDirectoryOrFail(this.entryContainerPath);
     }
-    async loadEntryById(entryId: string): Promise<Entry> {
-	return new Entry(entryId, this);
-    }
-    async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {
+    async getEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<string[]> {
 	const allMatchingEntryIds = [] as string[];
 	for (const possibleValue of possibleFieldValues) {
 	    const valuePath = this.getValuePathForField(fieldName, possibleValue);
 	    const matchingEntryIds = await this.database.readDirectoryOrFail(valuePath);
 	    allMatchingEntryIds.push(...matchingEntryIds);
 	}
-	return allMatchingEntryIds.map(id => new Entry(id, this));
+	return allMatchingEntryIds;
+    }
+
+    async getFieldsOfEntry(entryId: string): Promise<string[]> {
+	return await this.database.readDirectoryOrFail(this.getEntryPath(entryId));
+    }
+    async getValuesForField(entryId: string, fieldName: string): Promise<string[]> {
+	const directoryPath = this.getFieldPathForEntry(entryId, fieldName);
+	return await this.database.readDirectoryOrFail(directoryPath);
     }
 
     // edit
-    async removeEntry(entry: Entry): Promise<void> {
+    async removeEntry(entryId: string): Promise<void> {
 	// delete from fields
-	const fields = await entry.getFields();
+	const fields = await this.getFieldsOfEntry(entryId);
 	for (const fieldName of fields) {
-	    this.clearFieldValuesForEntry(entry, fieldName);
+	    this.clearFieldValuesForEntry(entryId, fieldName);
 	}
 
 	// delete entry
-	this.database.deleteObjectOrFail(entry.path);
+	const entryPath = this.getEntryPath(entryId);
+	this.database.deleteObjectOrFail(entryPath);
     }
-    async clearFieldValuesForEntry(entry: Entry, fieldName: string): Promise<void> {
-	const fieldValues = await entry.getFieldValues(fieldName);
+    async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {
+	const fieldValues = await this.getValuesForField(entryId, fieldName);
 	for (const fieldValue of fieldValues) {
-	    this.removeEntryFromFieldValue(fieldName, fieldValue, entry.id);
+	    this.removeEntryFromFieldValue(fieldName, fieldValue, entryId);
 	}
     }
     async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {
 	for (const fieldValue of valuesToRemove) {
-	    const valuePath = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
-	    this.database.deleteObjectOrFail(valuePath);
+	    // field
+	    const pathInField = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
+	    this.database.deleteObjectOrFail(pathInField);
+
+	    // entry
+	    const pathInEntry = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
+	    this.database.deleteObjectOrFail(pathInEntry);
 	}
     }
     async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {
 	for (const fieldValue of valuesToAdd) {
-	    const valuePath = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
-	    this.database.writeFileOrFail(valuePath, "");
+	    // field
+	    const pathInField = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
+	    this.database.writeFileOrFail(pathInField, "");
+
+	    // entry
+	    const pathInEntry = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
+	    this.database.writeFileOrFail(pathInEntry, "");
 	}
-    }
-}
-
-export class Entry {
-    id: string;
-    table: Table;
-
-    constructor(id: string, table: Table) {
-	this.id = id;
-	this.table = table;
-    }
-
-    get path(): string[] {
-	return this.table.getEntryPath(this.id);
-    }
-    get database(): Database {
-	return this.table.database;
-    }
-
-    async getFields(): Promise<string[]> {
-	return await this.database.readDirectoryOrFail(this.path);
-    }
-    async getFieldValues(fieldName: string): Promise<string[]> {
-	const directoryPath = this.table.getFieldPathForEntry(this.id, fieldName);
-	return await this.database.readDirectoryOrFail(directoryPath);
     }
 }
