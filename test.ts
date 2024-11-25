@@ -1,4 +1,5 @@
 import Path from "path";
+import Fs from "fs";
 import { Util, Database, Table, Entry } from "./index";
 
 function logStep(stepName: string) {
@@ -41,8 +42,15 @@ function assertArrays(a: any[], b: any[]) {
     ok();
 }
 
+console.log("setting variables...");
+const TEST_DIR = "test";
+const DB_BASE = "base";
+
+console.log("preparing...");
+Fs.rmdirSync(TEST_DIR);
+Fs.mkdirSync(TEST_DIR, { recursive: true })
+
 console.log("starting test...");
-const DB_BASE = "test";
 
 /////
 logStep("generate directory path");
@@ -70,4 +78,7 @@ logStep("database paths");
 logStep("file system operations");
 {
     const database = new Database(DB_BASE);
+
+    const directoryPath = ["a"];
+    
 }
