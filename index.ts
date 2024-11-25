@@ -8,8 +8,14 @@ export class Util {
 	return [...filePath].splice(0, filePath.length - 1);
     }
 
-    static logActivity(message: string, detail: string): void {
+    static logFileSystemActivity(message: string, detail: string): void {
 	console.log(Colors.magenta(message), Colors.bold(detail));
+    }
+    static logEntryActivity(message: string): void {
+	console.log(Colors.cyan(message));
+    }
+    static logEntryValueActivity(entryId: string, fieldName: string, verb: string, values: string[]): void {
+	this.logEntryActivity(`${entryId}, field ${fieldName}: ${verb} ${values.length == 1 ? "value" : `${values.length} values:`} ${values.join(", ")}`)
     }
     static logSuccess(message: string, detail: string): void {
 	console.log(Colors.green(message), Colors.bold(detail));
@@ -35,7 +41,7 @@ export class Database {
     // Directories
     async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(directoryPath);
-	Util.logActivity("creating directory at", joinedPath);
+	Util.logFileSystemActivity("creating directory at", joinedPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
 	Util.logSuccess("created directory at", joinedPath);
     }
@@ -50,7 +56,7 @@ export class Database {
 	await this.createDirectoryOrFail(directoryPath);
 
 	const joinedPath = this.getFileSystemPath(directoryPath);
-	Util.logActivity("reading directory at", joinedPath);
+	Util.logFileSystemActivity("reading directory at", joinedPath);
 	return await Fs.readdir(joinedPath);
     }
 
@@ -59,18 +65,18 @@ export class Database {
 	await this.createParentDirectoryForFileOrFail(filePath);
 
 	const joinedPath = this.getFileSystemPath(filePath);
-	Util.logActivity("writing file at", joinedPath);
+	Util.logFileSystemActivity("writing file at", joinedPath);
 	await Fs.writeFile(joinedPath, content);
 	Util.logSuccess("wrote file at", joinedPath);
     }
     async readFileOrFail(filePath: string[]): Promise<string> {
 	const joinedPath = this.getFileSystemPath(filePath);
-	Util.logActivity("reading file at", joinedPath);
+	Util.logFileSystemActivity("reading file at", joinedPath);
 	return await Fs.readFile(joinedPath, { encoding: "utf8" });
     }
     async deleteObjectOrFail(filePath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(filePath);
-	Util.logActivity("deleting object at", joinedPath);
+	Util.logFileSystemActivity("deleting object at", joinedPath);
 	await Fs.rm(joinedPath, { recursive: true });
 	Util.logSuccess("deleted object at", joinedPath);
     }
@@ -176,6 +182,8 @@ export class Table {
 
     // edit
     async removeEntry(entryId: string): Promise<void> {
+	Util.logEntryActivity(`removing entry ${entryId}`);
+
 	// delete from fields
 	try {
 	    const fields = await this.getFieldsOfEntry(entryId);
@@ -195,6 +203,7 @@ export class Table {
 	await this.removeFieldValuesFromEntry(entryId, fieldName, fieldValues);
     }
     async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {
+	Util.logEntryValueActivity(entryId, fieldName, "removing", valuesToRemove);
 	for (const fieldValue of valuesToRemove) {
 	    // field
 	    try {
@@ -210,6 +219,7 @@ export class Table {
 	}
     }
     async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {
+	Util.logEntryValueActivity(entryId, fieldName, "adding", valuesToAdd);
 	for (const fieldValue of valuesToAdd) {
 	    // field
 	    try {
