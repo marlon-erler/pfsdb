@@ -3,7 +3,7 @@ import Path from "path";
 
 export class Util {
     static getDirectoryPath(filePath: string[]): string[] {
-	return [...filePath].splice(0, filePath.length - 2);
+	return [...filePath].splice(0, filePath.length - 1);
     }
 }
 
