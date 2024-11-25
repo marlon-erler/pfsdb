@@ -164,5 +164,47 @@ logStep("table basic");
 logStep("core");
 {
     const database = new Database(DB_BASE);
-    const table = new Table(TABLE_NAME, database);
+
+    async function testTable(tableName: string) {
+	const table = new Table(tableName, database);
+
+	async function testEntry(suffix: string) {
+	    const entryId = `entry-${suffix}`;
+
+	    console.log("adding values to fields...");
+	    await table.addFieldValuesToEntry(entryId, "a", ["a", "b", "c"]);
+	    await table.addFieldValuesToEntry(entryId, "a", ["c", "d"]);
+	    await table.addFieldValuesToEntry(entryId, "b", ["1", "2"]);
+
+	    console.log("getting fields...");
+	    const fields = await table.getFieldsOfEntry(entryId);
+	    assertArrays(fields, ["a", "b"]);
+
+	    console.log("getting values...");
+	    const aValues = await table.getValuesForField(entryId, "a");
+	    const bValues = await table.getValuesForField(entryId, "b");
+	    assertArrays(aValues, ["a", "b", "c", "d"]);
+	    assertArrays(bValues, ["1", "2"]);
+
+	    console.log("deleting values...");
+	    await table.removeFieldValuesFromEntry(entryId, "a", ["a", "b"]);
+	    const removeControl = await table.getValuesForField(entryId, "a");
+	    assertArrays(removeControl, ["c"]);
+
+	    console.log("clearing values...");
+	    await table.clearFieldValuesForEntry(entryId, "b");
+	    const clearControl = await table.getValuesForField(entryId, "b");
+	    assertArrays(clearControl, []);
+	}
+
+	await testEntry("1");
+	await testEntry("2");
+
+	console.log("getting entries...");
+	const entries = await table.getAllEntries();
+	assertArrays(entries, ["entry-1", "entry-2"]);
+    }
+
+    await testTable("A");
+    await testTable("B");
 }

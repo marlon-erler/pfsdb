@@ -117,16 +117,15 @@ export class Table {
 		const valuePath = this.getValuePathForField(fieldName, possibleValue);
 		const matchingEntryIds = await this.database.readDirectoryOrFail(valuePath);
 		allMatchingEntryIds.push(...matchingEntryIds);
-	    } catch {
-		continue;
-	    }
+	    } catch {}
 	}
 	return allMatchingEntryIds;
     }
 
     async getFieldsOfEntry(entryId: string): Promise<string[]> {
 	try {
-	    return await this.database.readDirectoryOrFail(this.getPathForEntry(entryId));
+	    const entryPath = this.getPathForEntry(entryId);
+	    return await this.database.readDirectoryOrFail(entryPath);
 	} catch {
 	    return [];
 	}
@@ -146,41 +145,33 @@ export class Table {
 	try {
 	    const fields = await this.getFieldsOfEntry(entryId);
 	    for (const fieldName of fields) {
-		this.clearFieldValuesForEntry(entryId, fieldName);
+		await this.clearFieldValuesForEntry(entryId, fieldName);
 	    }
-	} catch {
-	    return;
-	}
+	} catch {}
 
 	// delete entry
 	try {
 	    const entryPath = this.getPathForEntry(entryId);
-	    this.database.deleteObjectOrFail(entryPath);
-	} catch {
-	    return;
-	}
+	    await this.database.deleteObjectOrFail(entryPath);
+	} catch {}
     }
     async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {
 	const fieldValues = await this.getValuesForField(entryId, fieldName);
-	this.removeFieldValuesFromEntry(entryId, fieldName, fieldValues);
+	await this.removeFieldValuesFromEntry(entryId, fieldName, fieldValues);
     }
     async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {
 	for (const fieldValue of valuesToRemove) {
 	    // field
 	    try {
 		const pathInField = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
-		this.database.deleteObjectOrFail(pathInField);
-	    } catch {
-		return;
-	    }
+		await this.database.deleteObjectOrFail(pathInField);
+	    } catch {}
 
 	    // entry
 	    try {
 		const pathInEntry = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
-		this.database.deleteObjectOrFail(pathInEntry);
-	    } catch {
-		return;
-	    }
+		await this.database.deleteObjectOrFail(pathInEntry);
+	    } catch {}
 	}
     }
     async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {
@@ -188,18 +179,14 @@ export class Table {
 	    // field
 	    try {
 		const pathInField = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
-		this.database.writeFileOrFail(pathInField, "");
-	    } catch {
-		return;
-	    }
+		await this.database.writeFileOrFail(pathInField, "");
+	    } catch {}
 
 	    // entry
 	    try {
 		const pathInEntry = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
-		this.database.writeFileOrFail(pathInEntry, "");
-	    } catch {
-		return;
-	    }
+		await this.database.writeFileOrFail(pathInEntry, "");
+	    } catch {}
 	}
     }
 }
