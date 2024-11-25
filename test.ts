@@ -150,3 +150,10 @@ logStep("table basic");
     console.log("checking specific field value path in entry...");
     assertArrays(table.getFieldValuePathForEntry(ENTRY_ID, FIELD_NAME, VALUE_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME, VALUE_NAME]);
 }
+
+/////
+logStep("core");
+{
+    const database = new Database(DB_BASE);
+    const table = new Table(TABLE_NAME, database);
+}
