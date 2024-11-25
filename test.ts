@@ -1,6 +1,6 @@
 import Path from "path";
 import Fs from "fs";
-import { Util, Database, Table, Entry } from "./index";
+import { Util, Database, Table } from "./index";
 
 function logStep(stepName: string) {
     console.log(`
