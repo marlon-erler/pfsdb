@@ -14,10 +14,12 @@ export class Database {
 	this.basePath = basePath;
     }
 
+    // Paths
     getFileSystemPath(path: string[]): string {
 	return Path.join(this.basePath, ...path);
     }
 
+    // Uirectories
     private async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(directoryPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
@@ -30,6 +32,7 @@ export class Database {
 	await this.createDirectoryOrFail([]);
     }
 
+    // Files
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {
 	this.createDirectoryForFileOrFail(filePath);
 	
@@ -61,6 +64,7 @@ export class Table {
 	this.database = database;
     }
 
+    // Paths
     get basePath(): string[] {
 	return [this.name];
     }
@@ -71,6 +75,7 @@ export class Table {
 	return [...this.basePath, "entries"];
     }
 
+    // fields
     private getFieldPath(fieldName: string): string[] {
 	return [...this.fieldContainerPath, fieldName];
     }
@@ -83,6 +88,7 @@ export class Table {
 	return [...fieldValuePath, entryId];
     }
 
+    // entries
     getEntryPath(entryId: string): string[] {
 	return [...this.entryContainerPath, entryId];
     }
@@ -95,6 +101,7 @@ export class Table {
 	return [...fieldPath, fieldValue];
     }
 
+    // Fields
     private async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {
 	const targetPath = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
 	this.database.writeFileOrFail(targetPath, "");
@@ -103,11 +110,9 @@ export class Table {
 	const targetPath = this.getEntryPathForFieldValue(fieldName, oldFieldValue, entryId);
 	this.database.deleteFileOrFail(targetPath);
     }
-    private async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {
-	this.removeEntryFromFieldValue(fieldName, oldFieldValue, entryId);
-	this.addEntryToFieldValue(fieldName, newFieldValue, entryId);
-    }
 
+    // Entries
+    // load
     async loadAllEntries(): Promise<Entry[]> {
 	const entryIds = await this.database.readDirectoryOrFail(this.entryContainerPath);
 	return entryIds.map(id => new Entry(id, this));
@@ -125,6 +130,7 @@ export class Table {
 	return allMatchingEntryIds.map(id => new Entry(id, this));
     }
 
+    // edit
     async removeEntry(entry: Entry): Promise<void> {
 	// delete from fields
 	const fields = await entry.getFields();
