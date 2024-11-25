@@ -43,9 +43,9 @@ export class Database {
 	const joinedPath = this.getFileSystemPath(filePath);
 	return await Fs.readFile(joinedPath, { encoding: "utf8" });
     }
-    async deleteFileOrFail(filePath: string[]): Promise<void> {
+    async deleteObjectOrFail(filePath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(filePath);
-	await Fs.rm(joinedPath);
+	await Fs.rm(joinedPath, { recursive: true });
     }
     async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
 	await this.createDirectoryOrFail(directoryPath);
