@@ -210,9 +210,21 @@ logStep("core");
 	await testEntry("1");
 	await testEntry("2");
 
-	log("getting entries...");
+	log("getting all entries...");
 	const entries = await table.getAllEntries();
 	assertArrays(entries, ["entry-1", "entry-2"]);
+	
+	log("getting entries by field a=a...");
+	const matchingEntries1 = await table.getEntriesByFieldValue("a", ["c"])
+	assertArrays(matchingEntries1, ["entry-1", "entry-2"]);
+	
+	log("getting entries by field id=1|2...");
+	const matchingEntries2 = await table.getEntriesByFieldValue("id", ["1", "2"])
+	assertArrays(matchingEntries2, ["entry-1", "entry-2"]);
+	
+	log("getting entries by field id=1...");
+	const matchingEntries3 = await table.getEntriesByFieldValue("id", ["1"])
+	assertArrays(matchingEntries3, ["entry-1"]);
     }
 
     await testTable("A");
