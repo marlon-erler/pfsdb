@@ -1,9 +1,14 @@
 import Fs from "fs/promises";
 import Path from "path";
+import Colors from "colors";
 
 export class Util {
     static getDirectoryPath(filePath: string[]): string[] {
 	return [...filePath].splice(0, filePath.length - 1);
+    }
+
+    static logActivity(message: string, detail: string): void {
+	console.log(Colors.magenta(message), Colors.bold(detail));
     }
 }
 
@@ -22,6 +27,7 @@ export class Database {
     // Directories
     async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(directoryPath);
+	Util.logActivity("creating directory at", joinedPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
     }
     private async createParentDirectoryForFileOrFail(filePath: string[]): Promise<void> {
@@ -31,27 +37,30 @@ export class Database {
     async createBaseDirectoryOrFail(): Promise<void> {
 	await this.createDirectoryOrFail([]);
     }
+    async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
+	await this.createDirectoryOrFail(directoryPath);
+
+	const joinedPath = this.getFileSystemPath(directoryPath);
+	return await Fs.readdir(joinedPath);
+    }
 
     // Files
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {
 	this.createParentDirectoryForFileOrFail(filePath);
 
 	const joinedPath = this.getFileSystemPath(filePath);
+	Util.logActivity("writing file at", joinedPath);
 	await Fs.writeFile(joinedPath, content);
     }
     async readFileOrFail(filePath: string[]): Promise<string> {
 	const joinedPath = this.getFileSystemPath(filePath);
+	Util.logActivity("reading file at", joinedPath);
 	return await Fs.readFile(joinedPath, { encoding: "utf8" });
     }
     async deleteObjectOrFail(filePath: string[]): Promise<void> {
 	const joinedPath = this.getFileSystemPath(filePath);
+	Util.logActivity("deleting object at", joinedPath);
 	await Fs.rm(joinedPath, { recursive: true });
-    }
-    async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
-	await this.createDirectoryOrFail(directoryPath);
-
-	const joinedPath = this.getFileSystemPath(directoryPath);
-	return await Fs.readdir(joinedPath);
     }
 }
 
