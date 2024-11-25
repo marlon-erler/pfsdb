@@ -41,6 +41,7 @@ export class Database {
 	await this.createDirectoryOrFail(directoryPath);
 
 	const joinedPath = this.getFileSystemPath(directoryPath);
+	Util.logActivity("reading directory at", joinedPath);
 	return await Fs.readdir(joinedPath);
     }
 
