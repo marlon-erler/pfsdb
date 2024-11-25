@@ -12,7 +12,6 @@ export class Database {
 
     constructor(basePath: string) {
 	this.basePath = basePath;
-	this.createBaseDirectoryOrFail();
     }
 
     getFileSystemPath(path: string[]): string {

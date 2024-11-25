@@ -45,6 +45,10 @@ function assertArrays(a: any[], b: any[]) {
 console.log("setting variables...");
 const TEST_DIR = "test";
 const DB_BASE = Path.join(TEST_DIR, "base");
+const TABLE_NAME = "table";
+const FIELD_NAME = "field";
+const VALUE_NAME = "value";
+const ENTRY_ID = "entry-id";
 
 console.log("preparing...");
 if (Fs.existsSync(TEST_DIR))
@@ -63,7 +67,7 @@ logStep("generate directory path");
 }
 
 /////
-logStep("database paths");
+logStep("database basic");
 {
     const database = new Database(DB_BASE);
 
@@ -87,19 +91,11 @@ logStep("file system operations");
     const realDirectoryPath = database.getFileSystemPath(directoryPath);
 
     const filePath = [...directoryPath, "file1"];
-    const realFilePath = database.getFileSystemPath(filePath);
-
     const filePathB = [...directoryPath, "file2"];
-    const realFilePathB = database.getFileSystemPath(filePath);
 
     const fileContent = "hello, world!";
 
     // test
-    console.log("checking base directory...");
-    if (!Fs.existsSync(DB_BASE))
-	throw "base directory missing";
-    ok();
-    
     console.log("creating directory...");
     await database.createDirectoryOrFail(directoryPath);
 
@@ -119,4 +115,38 @@ logStep("file system operations");
     console.log("deleting file...");
     await database.deleteFileOrFail(filePath);
     assertArrays(["file2"], await database.readDirectoryOrFail(directoryPath));
+}
+
+/////
+logStep("table basic");
+{
+    const database = new Database(DB_BASE);
+    const table = new Table(TABLE_NAME, database);
+
+    console.log("checking base path...");
+    assertArrays([TABLE_NAME], table.basePath);
+
+    console.log("checking field container path...");
+    assertArrays(table.fieldContainerPath, [TABLE_NAME, "fields"]);
+
+    console.log("checking entry container path...");
+    assertArrays(table.entryContainerPath, [TABLE_NAME, "entries"]);
+
+    console.log("checking specific field path...");
+    assertArrays(table.getFieldPath(FIELD_NAME), [TABLE_NAME, "fields", FIELD_NAME]);
+
+    console.log("checking specific field value path...");
+    assertArrays(table.getValuePathForField(FIELD_NAME, VALUE_NAME), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME]);
+
+    console.log("checking specific entry path in field...");
+    assertArrays(table.getEntryPathForFieldValue(FIELD_NAME, VALUE_NAME, ENTRY_ID), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME, ENTRY_ID]);
+
+    console.log("checking specific entry path...");
+    assertArrays(table.getEntryPath(ENTRY_ID), [TABLE_NAME, "entries", ENTRY_ID]);
+
+    console.log("checking specific field path in entry...");
+    assertArrays(table.getFieldPathForEntry(ENTRY_ID, FIELD_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME]);
+
+    console.log("checking specific field value path in entry...");
+    assertArrays(table.getFieldValuePathForEntry(ENTRY_ID, FIELD_NAME, VALUE_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME, VALUE_NAME]);
 }
