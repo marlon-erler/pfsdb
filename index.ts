@@ -108,7 +108,7 @@ export class Table {
     }
     private async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {
 	const targetPath = this.getEntryPathForFieldValue(fieldName, oldFieldValue, entryId);
-	this.database.deleteFileOrFail(targetPath);
+	this.database.deleteObjectOrFail(targetPath);
     }
 
     // Entries
@@ -139,7 +139,7 @@ export class Table {
 	}
 
 	// delete entry
-	this.database.deleteFileOrFail(entry.path);
+	this.database.deleteObjectOrFail(entry.path);
     }
     async clearFieldValuesForEntry(entry: Entry, fieldName: string): Promise<void> {
 	const fieldValues = await entry.getFieldValues(fieldName);
@@ -150,7 +150,7 @@ export class Table {
     async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {
 	for (const fieldValue of valuesToRemove) {
 	    const valuePath = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
-	    this.database.deleteFileOrFail(valuePath);
+	    this.database.deleteObjectOrFail(valuePath);
 	}
     }
     async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {
