@@ -42,7 +42,7 @@ export class Database {
 	const joinedPath = this.joinPath(filePath);
 	await Fs.rm(joinedPath);
     }
-    async listFilesOrFail(directoryPath: string[]): Promise<string[]> {
+    async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
 	const joinedPath = this.joinPath(directoryPath);
 	return await Fs.readdir(joinedPath);
     }
@@ -70,29 +70,29 @@ export class Table {
     getFieldPath(fieldName: string): string[] {
 	return [...this.fieldContainerPath, fieldName];
     }
-    getFieldValuePath(fieldName: string, fieldValue: string): string[] {
+    getValuePathForField(fieldName: string, fieldValue: string): string[] {
 	const fieldPath = this.getFieldPath(fieldName);
 	return [...fieldPath, fieldValue];
     }
-    getFieldValuePathForEntry(fieldName: string, fieldValue: string, entryId: string): string[] {
-	const fieldValuePath = this.getFieldValuePath(fieldName, fieldValue);
+    getEntryPathForFieldValue(fieldName: string, fieldValue: string, entryId: string): string[] {
+	const fieldValuePath = this.getValuePathForField(fieldName, fieldValue);
 	return [...fieldValuePath, entryId];
     }
 
     getEntryPath(entryId: string): string[] {
 	return [...this.entryContainerPath, entryId];
     }
-    getEntryFieldPath(entryId: string, fieldName: string): string[] {
+    getFieldPathForEntry(entryId: string, fieldName: string): string[] {
 	const entryPath = this.getEntryPath(entryId);
 	return [...entryPath, fieldName];
     }
 
     async addEntryToFieldValue(fieldName: string, fieldValue: string, entryId: string): Promise<void> {
-	const targetPath = this.getFieldValuePathForEntry(fieldName, fieldValue, entryId);
+	const targetPath = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
 	this.database.writeFileOrFail(targetPath, "");
     }
     async removeEntryFromFieldValue(fieldName: string, oldFieldValue: string, entryId: string): Promise<void> {
-	const targetPath = this.getFieldValuePathForEntry(fieldName, fieldValue, entryId);
+	const targetPath = this.getEntryPathForFieldValue(fieldName, oldFieldValue, entryId);
 	this.database.deleteFileOrFail(targetPath);
     }
     async replaceFieldValueForEntry(fieldName: string, oldFieldValue: string, newFieldValue: string, entryId: string): Promise<void> {
@@ -101,7 +101,7 @@ export class Table {
     }
 
     async loadAllEntries(): Promise<Entry[]> {
-	const entryIds = await this.database.listFilesOrFail(this.entryContainerPath);
+	const entryIds = await this.database.readDirectoryOrFail(this.entryContainerPath);
 	return entryIds.map(id => new Entry(id, this));
     }
     async loadEntryById(entryId: string): Promise<Entry> {
@@ -110,8 +110,8 @@ export class Table {
     async loadEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<Entry[]> {
 	const allMatchingEntryIds = [] as string[];
 	for (const possibleValue of possibleFieldValues) {
-	    const valuePath = this.getFieldValuePath(fieldName, possibleValue);
-	    const matchingEntryIds = await this.database.listFilesOrFail(valuePath);
+	    const valuePath = this.getValuePathForField(fieldName, possibleValue);
+	    const matchingEntryIds = await this.database.readDirectoryOrFail(valuePath);
 	    allMatchingEntryIds.push(...matchingEntryIds);
 	}
 	return allMatchingEntryIds.map(id => new Entry(id, this));
@@ -140,10 +140,10 @@ export class Entry {
     }
 
     async getFields(): Promise<string[]> {
-	return await this.database.listFilesOrFail(this.path);
+	return await this.database.readDirectoryOrFail(this.path);
     }
     async getFieldValues(fieldName: string): Promise<string[]> {
-	const directoryPath = this.table.getEntryFieldPath(this.id, fieldName);
-	return await this.database.listFilesOrFail(directoryPath);
+	const directoryPath = this.table.getFieldPathForEntry(this.id, fieldName);
+	return await this.database.readDirectoryOrFail(directoryPath);
     }
 }
