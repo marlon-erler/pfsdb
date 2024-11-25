@@ -168,7 +168,7 @@ export class Table {
 		} catch {}
 	    }
 
-	    return values.sort();
+	    return values;
 	} catch {
 	    return [];
 	}

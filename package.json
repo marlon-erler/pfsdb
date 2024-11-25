@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/marlon-erler/rfsdb#readme",
   "dependencies": {
+    "@types/md5": "^2.3.5",
     "@types/node": "^22.9.3",
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "md5": "^2.3.0"
   }
 }

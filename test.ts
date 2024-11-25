@@ -129,6 +129,7 @@ logStep("table basic");
     const TABLE_NAME = "table";
     const FIELD_NAME = "field";
     const VALUE_NAME = "value";
+    const VALUE_KEY = Util.generateValueKey(VALUE_NAME);
     const ENTRY_ID = "entry-id";
 
     // test
@@ -150,11 +151,11 @@ logStep("table basic");
 
     log("checking specific field value path...");
     // @ts-expect-error 
-    assertArrays(table.getValuePathForField(FIELD_NAME, VALUE_NAME), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME]);
+    assertArrays(table.getValuePathForField(FIELD_NAME, VALUE_NAME), [TABLE_NAME, "fields", FIELD_NAME, VALUE_KEY]);
 
     log("checking specific entry path in field...");
     // @ts-expect-error 
-    assertArrays(table.getEntryPathForFieldValue(FIELD_NAME, VALUE_NAME, ENTRY_ID), [TABLE_NAME, "fields", FIELD_NAME, VALUE_NAME, ENTRY_ID]);
+    assertArrays(table.getEntryPathForFieldValue(FIELD_NAME, VALUE_NAME, ENTRY_ID), [TABLE_NAME, "fields", FIELD_NAME, VALUE_KEY, ENTRY_ID]);
 
     log("checking specific entry path...");
     // @ts-expect-error 
@@ -166,13 +167,14 @@ logStep("table basic");
 
     log("checking specific field value path in entry...");
     // @ts-expect-error 
-    assertArrays(table.getFieldValuePathForEntry(ENTRY_ID, FIELD_NAME, VALUE_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME, VALUE_NAME]);
+    assertArrays(table.getFieldValuePathForEntry(ENTRY_ID, FIELD_NAME, VALUE_NAME), [TABLE_NAME, "entries", ENTRY_ID, FIELD_NAME, VALUE_KEY]);
 }
 
 /////
 logStep("core");
 {
     const database = new Database(DB_BASE);
+    const COMPLEX_VALUE = "value,./;:'[]{}()!@#$%^&*";
 
     async function testTable(tableName: string) {
 	const table = new Table(tableName, database);
@@ -183,7 +185,7 @@ logStep("core");
 	    log("adding values to fields...");
 	    await table.addFieldValuesToEntry(entryId, "a", ["a", "b", "c"]);
 	    await table.addFieldValuesToEntry(entryId, "a", ["c", "d"]);
-	    await table.addFieldValuesToEntry(entryId, "b", ["1", "2"]);
+	    await table.addFieldValuesToEntry(entryId, "b", ["1", "2", COMPLEX_VALUE]);
 	    await table.addFieldValuesToEntry(entryId, "id", [suffix]);
 
 	    log("getting fields...");
@@ -194,7 +196,7 @@ logStep("core");
 	    const aValues = await table.getValuesForField(entryId, "a");
 	    const bValues = await table.getValuesForField(entryId, "b");
 	    assertArrays(aValues, ["a", "b", "c", "d"]);
-	    assertArrays(bValues, ["1", "2"]);
+	    assertArrays(bValues, ["1", "2", COMPLEX_VALUE]);
 
 	    log("deleting values...");
 	    await table.removeFieldValuesFromEntry(entryId, "a", ["a", "b"]);
