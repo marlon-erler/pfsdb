@@ -195,8 +195,10 @@ logStep("core");
 	    log("getting values...");
 	    const aValues = await table.getValuesForField(entryId, "a");
 	    const bValues = await table.getValuesForField(entryId, "b");
+	    const unknownValues = await table.getValuesForField(entryId, "x");
 	    assertArrays(aValues, ["a", "b", "c", "d"]);
 	    assertArrays(bValues, ["1", "2", COMPLEX_VALUE]);
+	    assertArrays(unknownValues, []);
 
 	    log("deleting values...");
 	    await table.removeFieldValuesFromEntry(entryId, "a", ["a", "b"]);
@@ -207,6 +209,15 @@ logStep("core");
 	    await table.clearFieldValuesForEntry(entryId, "b");
 	    const clearControl = await table.getValuesForField(entryId, "b");
 	    assertArrays(clearControl, []);
+
+	    log("removing non-existent entry...");
+	    await table.removeEntry("x");
+
+	    log("accessing non-existent field...");
+	    await table.getValuesForField("x", "x");
+
+	    log("deleting non-existent value...");
+	    await table.removeFieldValuesFromEntry("x", "x", ["x"]);
 	}
 
 	await testEntry("1");
