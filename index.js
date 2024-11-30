@@ -46,7 +46,6 @@ export class Database {
     await this.createDirectoryOrFail([]);
   }
   async readDirectoryOrFail(directoryPath) {
-    await this.createDirectoryOrFail(directoryPath);
     const joinedPath = this.getFileSystemPath(directoryPath);
     Util.logFileSystemActivity("reading directory at", joinedPath);
     return await Fs.readdir(joinedPath);
@@ -211,5 +210,9 @@ export class Table {
       } catch {
       }
     }
+  }
+  async setFieldValuesForEntry(entryId, fieldName, newFieldValues) {
+    this.clearFieldValuesForEntry(entryId, fieldName);
+    this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
   }
 }

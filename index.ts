@@ -233,7 +233,7 @@ export class Table {
 	}
     }
     async setFieldValuesForEntry(entryId: string, fieldName: string, newFieldValues: string[]): Promise<void> {
-	this.clearFieldValuesForEntry(entryId, fieldName);
-	this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
+	await this.clearFieldValuesForEntry(entryId, fieldName);
+	await this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
     }
 }

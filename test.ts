@@ -210,6 +210,11 @@ logStep("core");
 	    const clearControl = await table.getValuesForField(entryId, "b");
 	    assertArrays(clearControl, []);
 
+	    log("setting values...");
+	    await table.setFieldValuesForEntry(entryId, "a", ["1", "2"]);
+	    const setControl = await table.getValuesForField(entryId, "a");
+	    assertArrays(setControl, ["1", "2"]);
+
 	    log("removing non-existent entry...");
 	    await table.removeEntry("x");
 
@@ -227,8 +232,8 @@ logStep("core");
 	const entries = await table.getAllEntries();
 	assertArrays(entries, ["entry-1", "entry-2"]);
 	
-	log("getting entries by field a=a...");
-	const matchingEntries1 = await table.getEntriesByFieldValue("a", ["c"])
+	log("getting entries by field a=1...");
+	const matchingEntries1 = await table.getEntriesByFieldValue("a", ["1"])
 	assertArrays(matchingEntries1, ["entry-1", "entry-2"]);
 	
 	log("getting entries by field id=1|2...");
