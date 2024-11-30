@@ -12,13 +12,17 @@ const table1 = new Table("table-1", database);
 const table2 = new Table("table-2", database);
 
 // write data
-await table1.addFieldValuesToEntry("john-doe", "name", ["John Doe"]);
-await table1.addFieldValuesToEntry("john-doe", "age", ["42"]);
-await table1.addFieldValuesToEntry("john-doe", "records", ["record1", "record2"]);
+await table1.addFieldValuesToEntry("john-doe", "name", ["John Doe"]); // ["John Doe"]
+await table1.addFieldValuesToEntry("john-doe", "age", ["42"]); // ["42"]
+await table1.addFieldValuesToEntry("john-doe", "records", ["record1", "record2"]); // ["record1", "record2"]
+await table1.addFieldValuesToEntry("john-doe", "records", ["record3"]); // ["record1", "record2", "record3"]
+
+// overwrite data
+await table1.setFieldValuesForEntry("john-doe", "records", ["record4", "record5"]); // ["record4", "record5"]
 
 // delete data
-await table1.removeFieldValuesFromEntry("john-doe", "records", ["record2"]);
-await table1.clearFieldValuesForEntry("john-doe", "records");
+await table1.removeFieldValuesFromEntry("john-doe", "records", ["record4"]); // ["record5"]
+await table1.clearFieldValuesForEntry("john-doe", "records"); // []
 await table1.removeEntry("john-doe");
 
 // find entries
