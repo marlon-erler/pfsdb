@@ -7,9 +7,16 @@ Usage
 // initialize database
 const database = new Database("path/to/database/directory");
 
+// define types
+enum Entries {
+    "name",
+    "age",
+    "records",
+}
+
 // create tables
-const table1 = new Table("table-1", database);
-const table2 = new Table("table-2", database);
+const table1 = new Table<keyof typeof Entries>("table-1", database);
+const table2 = new Table<string>("table-2", database);
 
 // write data
 await table1.addFieldValuesToEntry("john-doe", "name", ["John Doe"]); // ["John Doe"]
