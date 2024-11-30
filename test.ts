@@ -248,3 +248,19 @@ logStep("core");
     await testTable("A");
     await testTable("B");
 }
+
+function testTypes() {
+    enum FieldNames {
+	"a", 
+	"b"
+    }
+
+    const database = new Database(".");
+    const table = new Table<keyof typeof FieldNames>("test", database);
+
+    table.setFieldValuesForEntry("a", "a", []);
+    //@ts-expect-error
+    table.setFieldValuesForEntry("a", "c", []);
+}
+// access only, no need to run
+testTypes;

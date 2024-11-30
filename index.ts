@@ -14,7 +14,7 @@ export class Util {
     static logEntryActivity(message: string): void {
 	console.log(Colors.cyan(message));
     }
-    static logEntryValueActivity(entryId: string, fieldName: string, verb: string, values: string[]): void {
+    static logEntryValueActivity(entryId: string, fieldName: F, verb: string, values: string[]): void {
 	this.logEntryActivity(`${entryId}, field ${fieldName}: ${verb} ${values.length == 1 ? "value" : `${values.length} values:`} ${values.join(", ")}`)
     }
     static logSuccess(message: string, detail: string): void {
@@ -80,7 +80,7 @@ export class Database {
     }
 }
 
-export class Table {
+export class Table<F extends string> {
     name: string;
     database: Database;
 
@@ -101,15 +101,15 @@ export class Table {
     }
 
     // fields
-    private getPathForField(fieldName: string): string[] {
+    private getPathForField(fieldName: F): string[] {
 	return [...this.fieldContainerPath, fieldName];
     }
-    private getValuePathForField(fieldName: string, fieldValue: string): string[] {
+    private getValuePathForField(fieldName: F, fieldValue: string): string[] {
 	const fieldPath = this.getPathForField(fieldName);
 	const valueKey = Util.generateValueKey(fieldValue);
 	return [...fieldPath, valueKey];
     }
-    private getEntryPathForFieldValue(fieldName: string, fieldValue: string, entryId: string): string[] {
+    private getEntryPathForFieldValue(fieldName: F, fieldValue: string, entryId: string): string[] {
 	const fieldValuePath = this.getValuePathForField(fieldName, fieldValue);
 	return [...fieldValuePath, entryId];
     }
@@ -118,11 +118,11 @@ export class Table {
     private getPathForEntry(entryId: string): string[] {
 	return [...this.entryContainerPath, entryId];
     }
-    private getFieldPathForEntry(entryId: string, fieldName: string): string[] {
+    private getFieldPathForEntry(entryId: string, fieldName: F): string[] {
 	const entryPath = this.getPathForEntry(entryId);
 	return [...entryPath, fieldName];
     }
-    private getFieldValuePathForEntry(entryId: string, fieldName: string, fieldValue: string): string[] {
+    private getFieldValuePathForEntry(entryId: string, fieldName: F, fieldValue: string): string[] {
 	const fieldPath = this.getFieldPathForEntry(entryId, fieldName);
 	const valueKey = Util.generateValueKey(fieldValue);
 	return [...fieldPath, valueKey];
@@ -137,7 +137,7 @@ export class Table {
 	    return [];
 	}
     }
-    async getEntriesByFieldValue(fieldName: string, possibleFieldValues: string[]): Promise<string[]> {
+    async getEntriesByFieldValue(fieldName: F, possibleFieldValues: string[]): Promise<string[]> {
 	const allMatchingEntryIds = [] as string[];
 	for (const possibleValue of possibleFieldValues) {
 	    try {
@@ -158,7 +158,7 @@ export class Table {
 	    return [];
 	}
     }
-    async getValuesForField(entryId: string, fieldName: string): Promise<string[]> {
+    async getValuesForField(entryId: string, fieldName: F): Promise<string[]> {
 	try {
 	    const directoryPath = this.getFieldPathForEntry(entryId, fieldName);
 	    const valueKeys = await this.database.readDirectoryOrFail(directoryPath);
@@ -196,11 +196,11 @@ export class Table {
 	    await this.database.deleteObjectOrFail(entryPath);
 	} catch {}
     }
-    async clearFieldValuesForEntry(entryId: string, fieldName: string): Promise<void> {
+    async clearFieldValuesForEntry(entryId: string, fieldName: F): Promise<void> {
 	const fieldValues = await this.getValuesForField(entryId, fieldName);
 	await this.removeFieldValuesFromEntry(entryId, fieldName, fieldValues);
     }
-    async removeFieldValuesFromEntry(entryId: string, fieldName: string, valuesToRemove: string[]): Promise<void> {
+    async removeFieldValuesFromEntry(entryId: string, fieldName: F, valuesToRemove: string[]): Promise<void> {
 	Util.logEntryValueActivity(entryId, fieldName, "removing", valuesToRemove);
 	for (const fieldValue of valuesToRemove) {
 	    // field
@@ -216,7 +216,7 @@ export class Table {
 	    } catch {}
 	}
     }
-    async addFieldValuesToEntry(entryId: string, fieldName: string, valuesToAdd: string[]): Promise<void> {
+    async addFieldValuesToEntry(entryId: string, fieldName: F, valuesToAdd: string[]): Promise<void> {
 	Util.logEntryValueActivity(entryId, fieldName, "adding", valuesToAdd);
 	for (const fieldValue of valuesToAdd) {
 	    // field
@@ -232,7 +232,7 @@ export class Table {
 	    } catch {}
 	}
     }
-    async setFieldValuesForEntry(entryId: string, fieldName: string, newFieldValues: string[]): Promise<void> {
+    async setFieldValuesForEntry(entryId: string, fieldName: F, newFieldValues: string[]): Promise<void> {
 	await this.clearFieldValuesForEntry(entryId, fieldName);
 	await this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
     }
