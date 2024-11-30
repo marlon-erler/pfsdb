@@ -232,4 +232,8 @@ export class Table {
 	    } catch {}
 	}
     }
+    async setFieldValuesForEntry(entryId: string, fieldName: string, newFieldValues: string[]): Promise<void> {
+	this.clearFieldValuesForEntry(entryId, fieldName);
+	this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
+    }
 }
