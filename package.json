@@ -1,6 +1,6 @@
 {
   "name": "pfsdb",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Plain File-System-Based Database",
   "main": "index.js",
   "scripts": {
