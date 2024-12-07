@@ -14,7 +14,7 @@ export class Util {
     static logEntryActivity(message: string): void {
 	console.log(Colors.cyan(message));
     }
-    static logEntryValueActivity(entryId: string, fieldName: F, verb: string, values: string[]): void {
+    static logEntryValueActivity(entryId: string, fieldName: string, verb: string, values: string[]): void {
 	this.logEntryActivity(`${entryId}, field ${fieldName}: ${verb} ${values.length == 1 ? "value" : `${values.length} values:`} ${values.join(", ")}`)
     }
     static logSuccess(message: string, detail: string): void {
@@ -186,7 +186,7 @@ export class Table<F extends string> {
 	try {
 	    const fields = await this.getFieldsOfEntry(entryId);
 	    for (const fieldName of fields) {
-		await this.clearFieldValuesForEntry(entryId, fieldName);
+		await this.clearFieldValuesForEntry(entryId, fieldName as any);
 	    }
 	} catch {}
 
