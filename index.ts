@@ -55,7 +55,8 @@ export class Database {
     async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
 	const joinedPath = this.getFileSystemPath(directoryPath);
 	Util.logFileSystemActivity("reading directory at", joinedPath);
-	return await Fs.readdir(joinedPath);
+	const contents = await Fs.readdir(joinedPath)
+	return contents.sort();
     }
 
     // Files
@@ -152,8 +153,7 @@ export class Table<F extends string> {
     async getFieldsOfEntry(entryId: string): Promise<string[]> {
 	try {
 	    const entryPath = this.getPathForEntry(entryId);
-	    const unsortedFields = await this.database.readDirectoryOrFail(entryPath);
-	    return unsortedFields.sort();
+	    return await this.database.readDirectoryOrFail(entryPath);
 	} catch {
 	    return [];
 	}
