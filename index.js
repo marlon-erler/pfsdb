@@ -48,7 +48,8 @@ export class Database {
   async readDirectoryOrFail(directoryPath) {
     const joinedPath = this.getFileSystemPath(directoryPath);
     Util.logFileSystemActivity("reading directory at", joinedPath);
-    return await Fs.readdir(joinedPath);
+    const contents = await Fs.readdir(joinedPath);
+    return contents.sort();
   }
   // Files
   async writeFileOrFail(filePath, content) {
@@ -132,13 +133,12 @@ export class Table {
       } catch {
       }
     }
-    return allMatchingEntryIds;
+    return allMatchingEntryIds.sort();
   }
   async getFieldsOfEntry(entryId) {
     try {
       const entryPath = this.getPathForEntry(entryId);
-      const unsortedFields = await this.database.readDirectoryOrFail(entryPath);
-      return unsortedFields.sort();
+      return await this.database.readDirectoryOrFail(entryPath);
     } catch {
       return [];
     }
@@ -212,7 +212,7 @@ export class Table {
     }
   }
   async setFieldValuesForEntry(entryId, fieldName, newFieldValues) {
-    this.clearFieldValuesForEntry(entryId, fieldName);
-    this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
+    await this.clearFieldValuesForEntry(entryId, fieldName);
+    await this.addFieldValuesToEntry(entryId, fieldName, newFieldValues);
   }
 }
