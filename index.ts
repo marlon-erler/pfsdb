@@ -40,20 +40,20 @@ export class Database {
 
     // Directories
     async createDirectoryOrFail(directoryPath: string[]): Promise<void> {
-	const joinedPath = this.getFileSystemPath(directoryPath);
+	const joinedPath: string = this.getFileSystemPath(directoryPath);
 	Util.logFileSystemActivity("creating directory at", joinedPath);
 	await Fs.mkdir(joinedPath, { recursive: true });
 	Util.logSuccess("created directory at", joinedPath);
     }
     private async createParentDirectoryForFileOrFail(filePath: string[]): Promise<void> {
-	const directoryPath = Util.getDirectoryPath(filePath);
+	const directoryPath: string[] = Util.getDirectoryPath(filePath);
 	await this.createDirectoryOrFail(directoryPath);
     }
     async createBaseDirectoryOrFail(): Promise<void> {
 	await this.createDirectoryOrFail([]);
     }
     async readDirectoryOrFail(directoryPath: string[]): Promise<string[]> {
-	const joinedPath = this.getFileSystemPath(directoryPath);
+	const joinedPath: string = this.getFileSystemPath(directoryPath);
 	Util.logFileSystemActivity("reading directory at", joinedPath);
 	const contents = await Fs.readdir(joinedPath)
 	return contents.sort();
@@ -63,18 +63,18 @@ export class Database {
     async writeFileOrFail(filePath: string[], content: string): Promise<void> {
 	await this.createParentDirectoryForFileOrFail(filePath);
 
-	const joinedPath = this.getFileSystemPath(filePath);
+	const joinedPath: string = this.getFileSystemPath(filePath);
 	Util.logFileSystemActivity("writing file at", joinedPath);
 	await Fs.writeFile(joinedPath, content);
 	Util.logSuccess("wrote file at", joinedPath);
     }
     async readFileOrFail(filePath: string[]): Promise<string> {
-	const joinedPath = this.getFileSystemPath(filePath);
+	const joinedPath: string = this.getFileSystemPath(filePath);
 	Util.logFileSystemActivity("reading file at", joinedPath);
 	return await Fs.readFile(joinedPath, { encoding: "utf8" });
     }
     async deleteObjectOrFail(filePath: string[]): Promise<void> {
-	const joinedPath = this.getFileSystemPath(filePath);
+	const joinedPath: string = this.getFileSystemPath(filePath);
 	Util.logFileSystemActivity("deleting object at", joinedPath);
 	await Fs.rm(joinedPath, { recursive: true });
 	Util.logSuccess("deleted object at", joinedPath);
@@ -106,12 +106,12 @@ export class Table<F extends string> {
 	return [...this.fieldContainerPath, fieldName];
     }
     private getValuePathForField(fieldName: F, fieldValue: string): string[] {
-	const fieldPath = this.getPathForField(fieldName);
-	const valueKey = Util.generateValueKey(fieldValue);
+	const fieldPath: string[] = this.getPathForField(fieldName);
+	const valueKey: string = Util.generateValueKey(fieldValue);
 	return [...fieldPath, valueKey];
     }
     private getEntryPathForFieldValue(fieldName: F, fieldValue: string, entryId: string): string[] {
-	const fieldValuePath = this.getValuePathForField(fieldName, fieldValue);
+	const fieldValuePath: string[] = this.getValuePathForField(fieldName, fieldValue);
 	return [...fieldValuePath, entryId];
     }
 
@@ -120,12 +120,12 @@ export class Table<F extends string> {
 	return [...this.entryContainerPath, entryId];
     }
     private getFieldPathForEntry(entryId: string, fieldName: F): string[] {
-	const entryPath = this.getPathForEntry(entryId);
+	const entryPath: string[] = this.getPathForEntry(entryId);
 	return [...entryPath, fieldName];
     }
     private getFieldValuePathForEntry(entryId: string, fieldName: F, fieldValue: string): string[] {
-	const fieldPath = this.getFieldPathForEntry(entryId, fieldName);
-	const valueKey = Util.generateValueKey(fieldValue);
+	const fieldPath: string[] = this.getFieldPathForEntry(entryId, fieldName);
+	const valueKey: string = Util.generateValueKey(fieldValue);
 	return [...fieldPath, valueKey];
     }
 
@@ -142,17 +142,17 @@ export class Table<F extends string> {
 	const allMatchingEntryIds = [] as string[];
 	for (const possibleValue of possibleFieldValues) {
 	    try {
-		const valuePath = this.getValuePathForField(fieldName, possibleValue);
-		const matchingEntryIds = await this.database.readDirectoryOrFail(valuePath);
+		const valuePath: string[] = this.getValuePathForField(fieldName, possibleValue);
+		const matchingEntryIds: string[] = await this.database.readDirectoryOrFail(valuePath);
 		allMatchingEntryIds.push(...matchingEntryIds);
 	    } catch {}
 	}
-	return allMatchingEntryIds;
+	return allMatchingEntryIds.sort();
     }
 
     async getFieldsOfEntry(entryId: string): Promise<string[]> {
 	try {
-	    const entryPath = this.getPathForEntry(entryId);
+	    const entryPath: string[] = this.getPathForEntry(entryId);
 	    return await this.database.readDirectoryOrFail(entryPath);
 	} catch {
 	    return [];
@@ -160,14 +160,14 @@ export class Table<F extends string> {
     }
     async getValuesForField(entryId: string, fieldName: F): Promise<string[]> {
 	try {
-	    const directoryPath = this.getFieldPathForEntry(entryId, fieldName);
-	    const valueKeys = await this.database.readDirectoryOrFail(directoryPath);
+	    const directoryPath: string[] = this.getFieldPathForEntry(entryId, fieldName);
+	    const valueKeys: string[] = await this.database.readDirectoryOrFail(directoryPath);
 	    const values = [] as string[];
 
 	    for (const key of valueKeys) {
 		try {
-		    const valuePath = [...directoryPath, key];
-		    const value = await this.database.readFileOrFail(valuePath);
+		    const valuePath: string[] = [...directoryPath, key];
+		    const value: string = await this.database.readFileOrFail(valuePath);
 		    values.push(value);
 		} catch {}
 	    }
@@ -184,7 +184,7 @@ export class Table<F extends string> {
 
 	// delete from fields
 	try {
-	    const fields = await this.getFieldsOfEntry(entryId);
+	    const fields: string[] = await this.getFieldsOfEntry(entryId);
 	    for (const fieldName of fields) {
 		await this.clearFieldValuesForEntry(entryId, fieldName as any);
 	    }
@@ -192,12 +192,12 @@ export class Table<F extends string> {
 
 	// delete entry
 	try {
-	    const entryPath = this.getPathForEntry(entryId);
+	    const entryPath: string[] = this.getPathForEntry(entryId);
 	    await this.database.deleteObjectOrFail(entryPath);
 	} catch {}
     }
     async clearFieldValuesForEntry(entryId: string, fieldName: F): Promise<void> {
-	const fieldValues = await this.getValuesForField(entryId, fieldName);
+	const fieldValues: string[] = await this.getValuesForField(entryId, fieldName);
 	await this.removeFieldValuesFromEntry(entryId, fieldName, fieldValues);
     }
     async removeFieldValuesFromEntry(entryId: string, fieldName: F, valuesToRemove: string[]): Promise<void> {
@@ -205,13 +205,13 @@ export class Table<F extends string> {
 	for (const fieldValue of valuesToRemove) {
 	    // field
 	    try {
-		const pathInField = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
+		const pathInField: string[] = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
 		await this.database.deleteObjectOrFail(pathInField);
 	    } catch {}
 
 	    // entry
 	    try {
-		const pathInEntry = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
+		const pathInEntry: string[] = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
 		await this.database.deleteObjectOrFail(pathInEntry);
 	    } catch {}
 	}
@@ -221,13 +221,13 @@ export class Table<F extends string> {
 	for (const fieldValue of valuesToAdd) {
 	    // field
 	    try {
-		const pathInField = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
+		const pathInField: string[] = this.getEntryPathForFieldValue(fieldName, fieldValue, entryId);
 		await this.database.writeFileOrFail(pathInField, "");
 	    } catch {}
 
 	    // entry
 	    try {
-		const pathInEntry = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
+		const pathInEntry: string[] = this.getFieldValuePathForEntry(entryId, fieldName, fieldValue);
 		await this.database.writeFileOrFail(pathInEntry, fieldValue);
 	    } catch {}
 	}
